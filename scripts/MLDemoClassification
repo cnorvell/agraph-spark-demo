@@ -1,0 +1,171 @@
+#!/usr/bin/env groovy
+
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper;
+
+if(args.length != 2) {
+	println "usage: <app> <context>"
+	return
+}
+
+String app = args[0]
+String context = args[1]
+
+
+//common params to be reused in jobs
+def params = [
+app: app,
+context: context,
+host: "jobserver",
+url: 'allegrograph-user',
+user: 'allegrograph-user',
+password: 'allegrograph-password',
+catalog: 'allegrograph-catalog',
+repository: 'allegrograph-repo',
+model: 'hdfs://hdfs-path/models/20news-naive-bayes',
+sparql: "select distinct ?g where { graph ?g { ?s ?p ?o . } }",
+inputGIDsName: 'classification-input-gids',
+classificationFeaturesName: 'classification-features',
+categorizedRDDName: 'categorized-nquads',
+inferredRDDName: 'inferred-nquads',
+ontology: 'hdfs://hdfs-path/data/ontology/twentynews-1.0.0.owl',
+rules: 'hdfs://hdfs-path/data/rules/testrules.txt'
+]
+
+println "ML Demo Trainining script"
+println "App (jar): ${app}"
+println "Context  : ${context}"
+println "Host: ${params.host}"
+
+
+// select GIDs
+executeJob('ai.vital.mldemo.agraph.SelectGraphsAgraphJob', params, [
+	url: '@url',
+	user: 'super',
+	password: '@password',
+	catalog: '@catalog',
+	repository: '@repository',
+	'output-name': '@inputGIDsName',
+	'sparql': '@sparql'	
+])
+
+executeJob('ai.vital.mldemo.agraph.SelectModelFeaturesAgraphJob', params, [
+	url: '@url',
+	user: 'super',
+	password: '@password',
+	catalog: '@catalog',
+	repository: '@repository',
+	'input-name': '@inputGIDsName',
+	'output-name': '@classificationFeaturesName'
+])
+
+executeJob('ai.vital.mldemo.naivebayes.NaiveBayesClassification', params, [
+	'input-name': '@classificationFeaturesName',
+	'model': '@model',
+	'output-name': '@categorizedRDDName'
+])
+
+executeJob('ai.vital.mldemo.agraph.InferenceStepJob', params, [
+	'input-name': '@categorizedRDDName',
+    'ontology': '@ontology',
+	'rules': '@rules',
+    'output-name': '@inferredRDDName'
+])
+
+executeJob('ai.vital.mldemo.agraph.WriteQuadsToAgraphJob', params, [
+   	url: '@url',
+	user: 'super',
+	password: '@password',
+	catalog: '@catalog',
+	repository: '@repository',
+	'input-name': '@inferredRDDName'
+])
+
+
+
+def void executeJob(String className, Map params, Map jobParam) {
+
+	def overridden = [:]
+		
+	for( def entry : jobParam.entrySet() ) {
+
+		String val = entry.value
+		
+		if(val.startsWith("@")) {
+			Object newVal = params.get(val.substring(1))
+			if(newVal != null) {
+				overridden.put(entry.key, newVal)
+			}
+				
+		}
+		
+	}
+
+	jobParam.putAll(overridden)
+	
+	def slurper = new JsonSlurper()
+	
+	String inputString = new JsonBuilder(jobParam).toPrettyString()
+	
+	//write it to temp file
+
+	def tempFile = new File("${className}.json")
+	tempFile.delete()
+	
+	tempFile << inputString
+	
+	println "Executing job: ${className}, job params: ${inputString}"
+	
+	def cmd = ['curl', '--data-binary', (String)"@${tempFile.name}", (String)"${params.host}/jobs?appName=${params.app}&classPath=${className}&context=${params.context}"]
+	
+	println "cmd: ${cmd}"
+	
+	StringBuilder sb = new StringBuilder()
+	def process=new ProcessBuilder(cmd).start()
+	process.inputStream.eachLine {sb.append(it).append("\n")}
+	int exitCode = process.waitFor()
+	println "exit code: ${exitCode}"
+	println "${sb}"
+	
+	 Map jobResponse = slurper.parseText(sb.toString());
+	 
+	 if(jobResponse.status != "STARTED") {
+		 println "Error when submiting job"
+		 println "${sb}"
+		 System.exit(1)
+	 }
+	
+	 String jobID = jobResponse.result.jobId
+	 
+	 println "Job started, ID: ${jobID}"
+	 
+	 boolean complete = false
+	 
+	 while(!complete) {
+		 
+		 def statusCmd = ['curl', (String)"${params.host}/jobs/${jobID}"]
+		 
+		 StringBuilder statusSB = new StringBuilder()
+		 def statusProcess=new ProcessBuilder(statusCmd)./*redirectErrorStream(true).*/start()
+		 statusProcess.inputStream.eachLine {statusSB.append(it).append("\n")}
+		 int statusExitCode = statusProcess.waitFor()
+		 
+		 Map statusResponse = slurper.parseText(statusSB.toString());
+		 
+		 if(statusResponse.status == 'RUNNING' ) {
+			 print(".")
+			 sleep(3000)
+		 } else {
+			print("\n")
+		 	println "Job status: ${statusResponse.status}"
+		 	println "${statusSB}"
+		 	complete = true
+		 }
+		 
+		 
+	 } 
+	 
+	
+}
+
+

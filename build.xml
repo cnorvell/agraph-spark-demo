@@ -1,0 +1,39 @@
+<project name="agraph-spark-demo" default="install-agraph-client">
+	
+	<property name="maven.command" value="mvn" />
+	
+	<target name="install-agraph-client">
+	
+		<exec command="${maven.command}">
+			<arg value="install:install-file" />
+			<arg value="-DgroupId=com.franz" />
+			<arg value="-DartifactId=agraph-java-client" />
+			<arg value="-Dversion=4.14.1" />
+			<arg value="-Dfile=${basedir}/lib/agraph-4.14.1/agraph-4.14.1.jar" />
+			<arg value="-Dpackaging=jar" />
+			<arg value="-DgeneratePom=true" />
+		</exec>
+		
+		<exec command="${maven.command}">
+			<arg value="install:install-file" />
+			<arg value="-DgroupId=com.franz" />
+			<arg value="-DartifactId=json" />
+			<arg value="-Dversion=1.0.0" />
+			<arg value="-Dfile=${basedir}/lib/agraph-4.14.1/json.jar" />
+			<arg value="-Dpackaging=jar" />
+			<arg value="-DgeneratePom=true" />
+		</exec>
+		
+		<exec command="${maven.command}">
+			<arg value="install:install-file" />
+			<arg value="-DgroupId=com.franz" />
+			<arg value="-DartifactId=openrdf-sesame-onejar" />
+			<arg value="-Dversion=2.6.8" />
+			<arg value="-Dfile=${basedir}/lib/agraph-4.14.1/openrdf-sesame-2.6.8-onejar.jar" />
+			<arg value="-Dpackaging=jar" />
+			<arg value="-DgeneratePom=true" />
+		</exec>
+		
+	</target>
+	
+</project>

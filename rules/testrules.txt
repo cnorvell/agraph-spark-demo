@@ -1,0 +1,2 @@
+( ?doc <http://vital.ai/ontology/twentynews#hasCategory> "topic.sports" ) <- ( ?doc <http://vital.ai/ontology/twentynews#hasCategory> "rec.sport.hockey" ) . 
+( ?doc <http://vital.ai/ontology/twentynews#hasCategory> "topic.sports" ) <- ( ?doc <http://vital.ai/ontology/twentynews#hasCategory> "rec.sport.baseball" ) .
