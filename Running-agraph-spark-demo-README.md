@@ -40,7 +40,8 @@ Running master:
 # ./run-master.sh
 
 Stopping master:
-# kill $( ps -fA | grep org.apache.spark.deploy.master.Master | grep java |  gawk '{ print  $2 }')
+# cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
+# ./stop-master.sh
 
 
 Spark master URL:
@@ -54,8 +55,8 @@ Running slave:
 # ./run-slave.sh
 
 Stopping slave:
-# kill $(ps -fA | grep org.apache.spark.deploy.worker.Worker | grep java | gawk '{ print  $2 }')
-
+# cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
+# ./stop-slave.sh
 
 Spark worker webview:
 http://127.0.0.1:8081
