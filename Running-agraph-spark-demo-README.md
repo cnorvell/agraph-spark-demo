@@ -30,19 +30,19 @@ Once an instance is running from this AMI, log in with user ec2-user via ssh.
 
 
 All components are installed in ec2-user home directory:
-        ```/home/ec2-user
+```        /home/ec2-user
 ```
 1. Spark Master and Worker
 
 Spark installation directory
-        ```/home/ec2-user/spark-1.2.0-bin-hadoop2.4
+```        /home/ec2-user/spark-1.2.0-bin-hadoop2.4
 ```
 Running master:
-        ```cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
+```        cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
          ./run-master.sh
 ```
 Stopping master:
-         ```cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
+ ```        cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
          ./stop-master.sh
 ```
 
