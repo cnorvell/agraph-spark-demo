@@ -1,4 +1,5 @@
-agraph-spark-demo AMI documentation
+Running the Allegrograph Spark Demo via AMI
+===================================
 
 The Amazon AMI preloaded with all services is:
 * Name: Allegrograph Spark Demo
@@ -50,13 +51,9 @@ cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
 ./stop-master.sh
 ```
 
-Spark master URL:
+Spark master URL: spark://127.0.0.1:7077
 
-spark://127.0.0.1:7077
-
-Spark master webview:
-
-http://127.0.0.1:8080
+Spark master webview: http://127.0.0.1:8080
 
 
 Running slave:
@@ -69,9 +66,7 @@ Stopping slave:
 cd /home/ec2-user/spark-1.2.0-bin-hadoop2.4
 ./stop-slave.sh
 ```
-Spark worker webview:
-
-http://127.0.0.1:8081
+Spark worker webview: http://127.0.0.1:8081
 
 
 2. Allegrograph 4.14.1
@@ -91,10 +86,8 @@ Stopping AG server:
 cd /home/ec2-user/ag4.14.1
 bin/agraph-control --config lib/agraph.cfg stop
 ```
-AGraph server endpoint URL + webview:
-```
-http://127.0.0.1:10035
-```
+AGraph server endpoint URL + webview: http://127.0.0.1:10035
+
 
 The AGraph is already configured and 20news quads:
 ```
@@ -127,9 +120,7 @@ cd /home/ec2-user/job-server
 ./server_stop.sh
 ```
 
-Job Server REST endpoint + webview:
-
-http://127.0.0.1:8090
+Job Server REST endpoint + webview: http://127.0.0.1:8090
 
 
 4. ML training and classification scripts
