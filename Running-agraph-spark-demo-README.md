@@ -1,9 +1,9 @@
 agraph-spark-demo AMI documentation
 
 The Amazon AMI preloaded with all services is:
-*Name: Allegrograph Spark Demo
-*AMI Name: agraph-spark-demo-ami
-*AMI ID: ami-00b2e068
+* Name: Allegrograph Spark Demo
+* AMI Name: agraph-spark-demo-ami
+* AMI ID: ami-00b2e068
 
 The original instance was type m3.xlarge with 200G EBS Volume.
 
